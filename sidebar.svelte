@@ -31,6 +31,12 @@
       return;
     }
 
+    if (document.activeElement) {
+      if (/^(?:input|select|textarea)$/i.test(document.activeElement.tagName)) {
+        return;
+      }
+    }
+
     if (event.key === "j") {
       index = (index + 1) % storyArray.length;
     } else if (event.key === "k") {
