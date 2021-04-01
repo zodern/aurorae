@@ -1,0 +1,23 @@
+#METEOR_STORIES-container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 10000;
+  overflow: auto;
+  width: 100vw;
+  height: 100vh;
+  background: white;
+  display: flex;
+}
+
+#METEOR_STORIES-sidebar-wrapper {
+  all: initial;
+  font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Ubuntu, roboto, noto, arial, sans-serif;
+  max-width: 250px;
+  min-width: 250px;
+}
+
+#METEOR_STORIES-content {
+  padding: 50px;
+  flex-grow: 1;
+}
