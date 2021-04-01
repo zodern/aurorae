@@ -89,6 +89,11 @@ function destroyComponent() {
       ReactDOM.unmountComponentAtNode(content);
       break;
 
+    case 'vue':
+      component.$destroy();
+      component.$el.parentNode.removeChild(component.$el);
+      break;
+
     default:
       throw new Error('Unknown component type');
   }
@@ -155,7 +160,28 @@ function createComponent() {
       }
       break;
 
-      break;
+    case 'vue': {
+      import Vue from 'vue';
+      // Vue replaces the element, so we create a child element
+      // for it to replace
+      wrapper = document.createElement('div');
+      content.appendChild(wrapper);
+      component = new Vue({
+        el: wrapper,
+        render: (createElement) => {
+          const el = createElement(selected.component, { props: selected.args });
+          if (selected.wrapper) {
+            return createElement(selected.wrapper, {
+              scopedSlots: {
+                default: () => el
+              }
+            });
+          }
+          return el;
+        }
+      });
+    }
+    break;
 
     default:
       throw new Error('Unknown component type');
