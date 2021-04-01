@@ -182,6 +182,6 @@ export function _addStory({ name, component, type, args}) {
   }
 }
 
-if (window.location.pathname === '/__meteor-stories') {
+if (window.location.pathname === '/__meteor-aurorae') {
   showStories();
 }
