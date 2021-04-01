@@ -54,8 +54,9 @@ const styles = `
 
 const stories = Object.create(null);
 let selected = null;
-let componentType = null;;
+let componentType = null;
 let component = null;
+let wrapper = null;
 
 function showSelected(story) {
   selected = story;
@@ -78,6 +79,9 @@ function destroyComponent() {
     case 'blaze':
       import { Blaze } from 'meteor/blaze';
       Blaze.remove(component);
+      if (wrapper) {
+        Blaze.remove(wrapper);
+      }
       break;
 
     case 'react':
@@ -91,34 +95,66 @@ function destroyComponent() {
 
   component = null;
   componentType = null;
+  wrapper = null;
 }
 
 function createComponent() {
   componentType = selected.type;
   switch (componentType) {
-    case 'svelte':
-      component = new selected.component({
-        target: content,
-        props: selected.args
-      });
+    case 'svelte': {
+        let selectedComponent = selected.component;
+        let props = selected.args;
+        if (selected.wrapper) {
+          selectedComponent = selected.wrapper;
+          props = {
+            props: selected.args,
+            component: selected.component
+          };
+        }
+        component = new selectedComponent({
+          target: content,
+          props
+        });
+      }
       break;
 
-    case 'blaze':
-      import { Blaze } from 'meteor/blaze';
-      component = Blaze.renderWithData(
-        selected.component,
-        selected.args,
-        content
-      );
+    case 'blaze': {
+        import { Blaze } from 'meteor/blaze';
+        let parent = content;
+        if (selected.wrapper) {
+          wrapper = Blaze.render(
+            selected.wrapper,
+            parent
+          );
+          parent = document.getElementById('story-blaze-content');
+          if (!parent) {
+            console.error('Wrapper for Blaze stories must have an element with the "story-blaze-content" id');
+          }
+        }
+        component = Blaze.renderWithData(
+          selected.component,
+          selected.args,
+          parent,
+          null,
+          wrapper,
+        );
+      }
       break;
 
-    case 'react':
-      import ReactDOM from 'react-dom';
-      import React from 'react';
-      component = ReactDOM.render(
-        React.createElement(selected.component, selected.args, null),
-        content,
-      );
+    case 'react': {
+        import ReactDOM from 'react-dom';
+        import React from 'react';
+        let wrapper = selected.wrapper || (({children}) => children);
+
+        component = ReactDOM.render(
+          wrapper({
+            children:React.createElement(selected.component, selected.args, null)
+          }),
+          content,
+        );
+      }
+      break;
+
       break;
 
     default:
@@ -167,19 +203,29 @@ export function showStories() {
 }
 
 export function _addStory({ name, component, type, args}) {
-  stories[name] = {
+  const config = {
     name,
     component,
     type,
-    args
+    args,
+    wrapper: null,
   };
+  stories[name] = config;
 
   if (sidebar) {
-    sidebar.$set({ stories });
-    if (selected && selected.name === name) {
-      showSelected(stories[name]);
-    }
+    setTimeout(() => {
+      sidebar.$set({ stories });
+      if (selected && selected.name === name) {
+        showSelected(config);
+      }
+    });
   }
+
+  return {
+    wrap(wrapper) {
+      config.wrapper = wrapper;
+    }
+  };
 }
 
 if (window.location.pathname === '/__meteor-aurorae') {
