@@ -1,11 +1,12 @@
 Package.describe({
-  name: 'zodern:stories',
+  name: 'zodern:aurorae',
   description: 'Storybook for Meteor',
-  // devOnly: true,
+  devOnly: true,
 });
 
 Package.onUse(api => {
-  api.use('svelte:compiler');
+  api.versionsFrom('2.0')
+  api.use('svelte:compiler@3.31.2');
   api.use('ecmascript');
   api.mainModule('./client.js', 'client');
   api.use('isobuild:compiler-plugin@1.0.0');

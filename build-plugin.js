@@ -11,7 +11,7 @@ class Compiler extends BabelCompiler {
     inputFiles.forEach(function (inputFile) {
       var path = inputFile.getPathInPackage();
       var inNodeModules = path.startsWith('node_modules/') || path.includes('/node_modules/');
-      console.log('compiling', inputFile.getPathInPackage(), inNodeModules);
+
       if (inputFile.supportsLazyCompilation) {
         inputFile.addJavaScript({
           path: inputFile.getPathInPackage(),
