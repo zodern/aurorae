@@ -20,4 +20,5 @@
 #METEOR_STORIES-content {
   padding: 50px;
   flex-grow: 1;
+  position: relative;
 }

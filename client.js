@@ -14,10 +14,10 @@ const styles = `
 
   div {
     width: 100%;
-    display: inline-block;
     background: #EEE;
     height: 100%;
     font-size: 14px;
+    overflow-y: auto;
   }
 
   h1 {
