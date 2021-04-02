@@ -12,7 +12,7 @@ if (module.hot) {
 
     },
     after(module) {
-      if (!module.id.endsWith('.story.js')) {
+      if (!module.id.endsWith('.stories.js')) {
         return;
       }
       // Make sure HMR is available,
