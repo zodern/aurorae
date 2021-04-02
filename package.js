@@ -1,6 +1,8 @@
 Package.describe({
   name: 'zodern:aurorae',
   description: 'Storybook for Meteor',
+  git: 'https://github.com/zodern/aurorae.git',
+  documentation: './readme.md'
 });
 
 Package.onUse(api => {

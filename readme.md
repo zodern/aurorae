@@ -9,6 +9,8 @@ Features:
 - Use Meteor packages and API's in your stories
 - Runs as part of your Meteor app - no extra command to run
 
+Meteor 2 or newer is recommended.
+
 ## Getting Started
 
 Add `zodern:aurorae` with
