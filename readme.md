@@ -2,6 +2,8 @@
 
 Development environment for UI components, built for Meteor. Similar to [Storybook](https://storybook.js.org/).
 
+<img src="https://user-images.githubusercontent.com/8175744/113375591-5abfc880-9335-11eb-9910-94a029414d71.png" width="600" />
+
 Features:
 
 - Simple API to define stories for React, Blaze, Svelte, and Vue
