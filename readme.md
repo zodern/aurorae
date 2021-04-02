@@ -17,7 +17,7 @@ Add `zodern:aurorae` with
 
 ```bash
 meteor add zodern:aurorae
-meteor npm install --save-dev svelte@3.31.2
+meteor npm install --save svelte@3.31.2
 ```
 
 Start your app and navigate to `/__meteor-aurorae` to view the stories in your app. For some apps, you might need to adjust the router to prevent redirecting away from `/__meteor-aurorae`.
