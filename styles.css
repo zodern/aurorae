@@ -21,4 +21,5 @@
   padding: 50px;
   flex-grow: 1;
   position: relative;
+  transform: translateZ(0);
 }

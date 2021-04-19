@@ -7,20 +7,6 @@
     return a.name.localeCompare(b.name);
   });
 
-  let timeout;
-  $: {
-    if (!timeout && !selected && storyArray.length > 0) {
-      // Ensure onStory is always called after svelte has returned from creating
-      // the component
-      timeout = setTimeout(() => {
-        timeout = null;
-        if (!selected && storyArray.length > 0) {
-          onStory(storyArray[0]);
-        }
-      });
-    }
-  }
-
   function currentIndex() {
     return storyArray.findIndex((story) => selected === story);
   }

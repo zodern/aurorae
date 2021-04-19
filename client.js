@@ -56,11 +56,15 @@ const stories = Object.create(null);
 let selected = null;
 let componentType = null;
 let component = null;
-let wrapper = null;
+
+const hashPrefix = '#story=';
+
+const Types = Object.create(null);
 
 function showSelected(story) {
   selected = story;
-  
+  history.replaceState(undefined, undefined, `${hashPrefix}${story.name}`);
+
   sidebar.$set({ selected })
   destroyComponent();
   createComponent();
@@ -71,120 +75,20 @@ function destroyComponent() {
     return;
   }
 
-  switch(componentType) {
-    case 'svelte':
-      component.$destroy();
-      break;
-
-    case 'blaze':
-      import { Blaze } from 'meteor/blaze';
-      Blaze.remove(component);
-      if (wrapper) {
-        Blaze.remove(wrapper);
-      }
-      break;
-
-    case 'react':
-      import ReactDOM from 'react-dom';
-      ReactDOM.unmountComponentAtNode(content);
-      break;
-
-    case 'vue':
-      component.$destroy();
-      component.$el.parentNode.removeChild(component.$el);
-      break;
-
-    default:
-      throw new Error('Unknown component type');
+  if (componentType in Types) {
+    Types[componentType].destroy(component, content);
   }
 
   component = null;
   componentType = null;
-  wrapper = null;
 }
 
 function createComponent() {
   componentType = selected.type;
-  switch (componentType) {
-    case 'svelte': {
-        let selectedComponent = selected.component;
-        let props = selected.args;
-        if (selected.wrapper) {
-          selectedComponent = selected.wrapper;
-          props = {
-            props: selected.args,
-            component: selected.component
-          };
-        }
-        component = new selectedComponent({
-          target: content,
-          props
-        });
-      }
-      break;
-
-    case 'blaze': {
-        import { Blaze } from 'meteor/blaze';
-        let parent = content;
-        if (selected.wrapper) {
-          wrapper = Blaze.render(
-            selected.wrapper,
-            parent
-          );
-          parent = document.getElementById('story-blaze-content');
-          if (!parent) {
-            console.error('Wrapper for Blaze stories must have an element with the "story-blaze-content" id');
-          }
-        }
-        component = Blaze.renderWithData(
-          selected.component,
-          selected.args,
-          parent,
-          null,
-          wrapper,
-        );
-      }
-      break;
-
-    case 'react': {
-        import ReactDOM from 'react-dom';
-        import React from 'react';
-        let wrapper = selected.wrapper || (({children}) => children);
-
-        component = ReactDOM.render(
-          wrapper({
-            children:React.createElement(selected.component, selected.args, null)
-          }),
-          content,
-        );
-      }
-      break;
-
-    case 'vue': {
-      import Vue from 'vue';
-      // Vue replaces the element, so we create a child element
-      // for it to replace
-      wrapper = document.createElement('div');
-      content.appendChild(wrapper);
-      component = new Vue({
-        el: wrapper,
-        render: (createElement) => {
-          const el = createElement(selected.component, { props: selected.args });
-          if (selected.wrapper) {
-            return createElement(selected.wrapper, {
-              scopedSlots: {
-                default: () => el
-              }
-            });
-          }
-          return el;
-        }
-      });
-    }
-    break;
-
-    default:
-      throw new Error('Unknown component type');
+  if (componentType in Types) {
+    component = Types[componentType].create(selected, content);
+  } else {
+    console.log('Unknown story type', componentType);
   }
 }
 
@@ -226,15 +130,43 @@ export function showStories() {
       selected
     }
   });
+
+  // Wait until all code has loaded, and any stories in `.stories.svelte`
+  // files have registered
+  Meteor.startup(() => {
+    setTimeout(() => {
+      Object.values(Types).forEach(config => {
+        if (typeof config.setup === 'function') {
+          config.setup();
+        }
+      });
+
+      let toSelect;
+      if (window.location.hash && window.location.hash.startsWith(hashPrefix)) {
+        let selectedName = window.location.hash.slice(hashPrefix.length);
+        selectedName = decodeURIComponent(selectedName);
+        if (selectedName in stories) {
+          toSelect = stories[selectedName];
+        }
+      }
+      if (!toSelect) {
+        toSelect = Object.values(stories)[0];
+      }
+      if (toSelect) {
+        showSelected(toSelect);
+      }
+    }, 200);
+  });
 }
 
-export function _addStory({ name, component, type, args}) {
+export function _addStory({ name, component, type, args }) {
   const config = {
     name,
     component,
     type,
     args,
     wrapper: null,
+    slots: Object.create(null)
   };
   stories[name] = config;
 
@@ -250,8 +182,18 @@ export function _addStory({ name, component, type, args}) {
   return {
     wrap(wrapper) {
       config.wrapper = wrapper;
+    },
+    slot(name, slot, slotProps) {
+      config.slots[name] = {
+        slot,
+        props: slotProps
+      };
     }
   };
+}
+
+export function addComponentType(type, { setup, create, destroy }) {
+  Types[type] = { setup, create, destroy };
 }
 
 if (window.location.pathname === '/__meteor-aurorae') {

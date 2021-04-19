@@ -7,7 +7,7 @@ Package.describe({
 
 Package.onUse(api => {
   api.versionsFrom('2.0')
-  api.use('svelte:compiler@3.31.2');
+  api.use('zodern:melte');
   api.use('ecmascript');
   api.use('dynamic-import');
   api.mainModule('./main.js', 'client');
