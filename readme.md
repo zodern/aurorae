@@ -1,15 +1,17 @@
 # Aurorae
 
-Development environment for UI components, built for Meteor. Similar to [Storybook](https://storybook.js.org/).
+Development environment for UI components, built for Meteor.
 
 <img src="https://user-images.githubusercontent.com/8175744/113375591-5abfc880-9335-11eb-9910-94a029414d71.png" width="600" />
+
+Auroae is similar to [Storybook](https://storybook.js.org/), with only the basic features.
 
 Features:
 
 - Simple API to define stories for React, Blaze, Svelte, and Vue
 - Updates stories and components with HMR (Requires Meteor 2)
 - Use Meteor packages and API's in your stories
-- Runs as part of your Meteor app - no extra command to run
+- Runs as part of your Meteor app
 
 Meteor 2 or newer is recommended.
 
@@ -19,12 +21,18 @@ Add `zodern:aurorae` with
 
 ```bash
 meteor add zodern:aurorae
-meteor npm install --save svelte@3.31.2
+meteor npm install --save svelte
 ```
 
-Start your app and navigate to `/__meteor-aurorae` to view the stories in your app. For some apps, you might need to adjust the router to prevent redirecting away from `/__meteor-aurorae`.
+Start your app and navigate to `/__meteor-aurorae` to view the stories in your app. For some apps, you might need to adjust the router used by the app to prevent redirecting away from `/__meteor-aurorae`.
 
-Stories are defined in files with the `.stories.js` extension (for example, `button.stories.js`). These files are automatically imported in your app during development, and excluded when building for production.
+Stories are defined in files with the `.stories.js`, `.stories.html`, or `.stories.svelte` extensions. These files are handled differently than other files in an app:
+
+- These files are always eagerly loaded in development
+- In production builds, the files are only loaded if they are imported by another file
+- `.stories.html` files are compiled using Blaze
+- `.stories.js` files are compiled the same way the `ecmascript` package compiles `.js` files
+- `.stories.svelte` files are compiled with `zodern:melte` package
 
 ## UI Frameworks
 
@@ -41,6 +49,12 @@ addStory(
   'Button - dark',
   Button,
   { title: 'Explore', theme: 'dark' }
+);
+
+// Or you can create a function component
+addStory(
+  'Button - dark',
+  () => <Button title='Explore' theme='dark' />
 );
 ```
 
@@ -70,6 +84,23 @@ addStory(
   Button,
   { title: 'Explore', theme: 'dark' }
 );
+```
+
+Or you can add stories in files with the `.stories.svelte` extension (for example, `button.stories.svelte`):
+
+```html
+<script>
+  import { Story } from 'meteor/zodern:aurorae/svelte';
+  import Button from './Button.svelte';
+</script>
+
+<Story name="button - dark">
+  <Button theme='dark'>Next</Button>
+</Story>
+
+<Story name="button - light">
+  <Button theme='light'>Next</Button>
+</Story>
 ```
 
 If you want to wrap your component with another component, you can add a wrapper by:
@@ -120,6 +151,20 @@ addStory(
   Template.button,
   { title: 'Explore', theme: 'dark' }
 );
+```
+
+Or you can add stories in files with the `.stories.html` extension (for example, `button.stories.html`). Templates that start with `story--` are added as Aurorae stories.
+
+```html
+<template name="story--Button - dark">
+  {{> button title="Explore" theme="dark"}}
+</template>
+
+<template name="story--Button - light">
+  {{#button theme="light"}}
+    Explore
+  {{/button}}
+</template>
 ```
 
 If you want to wrap your template with another template, you can add a wrapper by:
@@ -203,5 +248,5 @@ showStories();
 
 ## Keyboard shortcuts
 
-- `j` go to next story
-- `k` go to previous story
+- `j` go to the next story
+- `k` go to the previous story
