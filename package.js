@@ -11,6 +11,7 @@ Package.onUse(api => {
   api.use('ecmascript');
   api.use('dynamic-import');
   api.mainModule('./main.js', 'client');
+  api.mainModule('./server.js', 'server');
   api.use('isobuild:compiler-plugin@1.0.0');
   api.imply('zodern:aurorae-compiler');
 });
