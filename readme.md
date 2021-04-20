@@ -28,11 +28,11 @@ Start your app and navigate to `/__meteor-aurorae` to view the stories in your a
 
 Stories are defined in files with the `.stories.js`, `.stories.html`, or `.stories.svelte` extensions. These files are handled differently than other files in an app:
 
-- These files are always eagerly loaded in development
-- In production builds, the files are only loaded if they are imported by another file
+- These files are always eagerly loaded on the client in development
+- In production builds or on the server, the files are only loaded if they are imported by another file
 - `.stories.html` files are compiled using Blaze
 - `.stories.js` files are compiled the same way the `ecmascript` package compiles `.js` files
-- `.stories.svelte` files are compiled with `zodern:melte` package
+- `.stories.svelte` files are compiled with the `zodern:melte` package
 
 ## UI Frameworks
 
