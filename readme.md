@@ -8,9 +8,9 @@ Auroae is similar to [Storybook](https://storybook.js.org/), with only the basic
 
 Features:
 
-- Simple API to define stories for React, Blaze, Svelte, and Vue
+- Create stories for React, Blaze, Svelte, and Vue
 - Updates stories and components with HMR (Requires Meteor 2)
-- Use Meteor packages and API's in your stories
+- Use Meteor packages, API's, and build plugins with your stories
 - Runs as part of your Meteor app
 
 Meteor 2 or newer is recommended.
