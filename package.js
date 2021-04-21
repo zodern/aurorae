@@ -1,6 +1,6 @@
 Package.describe({
   name: 'zodern:aurorae',
-  description: 'Development environment for UI components',
+  summary: 'Development environment for UI components',
   git: 'https://github.com/zodern/aurorae.git',
   documentation: './readme.md',
   version: '0.1.0'
