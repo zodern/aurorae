@@ -3,7 +3,7 @@ Package.describe({
   summary: 'Development environment for UI components',
   git: 'https://github.com/zodern/aurorae.git',
   documentation: './readme.md',
-  version: '0.1.0'
+  version: '0.1.1'
 });
 
 Package.onUse(api => {
